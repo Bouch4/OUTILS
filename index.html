@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Frankton · Outils & Objectifs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--ink:#1A1A2E;--ink-2:#22223e;--ink-3:#2c2c4f;--red:#E84545;--amber:#F5A623;
+    --paper:#EDEDF2;--muted:#8c8caa;--line:rgba(255,255,255,.08);--green:#4caf82}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--ink);color:var(--paper);font-family:'Inter',system-ui,sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased;padding:0 16px 80px}
+  .wrap{max-width:980px;margin:0 auto}
+  header{padding:36px 0 20px;border-bottom:2px solid var(--red)}
+  .eyebrow{font-family:'Bebas Neue',sans-serif;letter-spacing:.22em;font-size:13px;color:var(--amber);text-transform:uppercase}
+  h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(38px,8vw,62px);line-height:.95;margin-top:4px}
+  h1 span{color:var(--red)}
+  .sub{color:var(--muted);font-size:14px;margin-top:10px;max-width:620px}
+  .controls{position:sticky;top:0;background:var(--ink);padding:16px 0 14px;z-index:20;border-bottom:1px solid var(--line)}
+  .toggle{display:flex;gap:6px;background:var(--ink-2);padding:5px;border-radius:12px;width:max-content}
+  .toggle button{font-family:'Bebas Neue',sans-serif;letter-spacing:.08em;font-size:18px;background:transparent;color:var(--muted);border:0;cursor:pointer;padding:9px 20px;border-radius:8px;transition:.18s}
+  .toggle button.active{background:var(--red);color:#fff}
+  .search{margin-top:12px;position:relative}
+  .search input{width:100%;background:var(--ink-2);border:1px solid var(--line);color:var(--paper);border-radius:12px;padding:13px 16px 13px 42px;font-size:15px;font-family:inherit;outline:none;transition:.18s}
+  .search input:focus{border-color:var(--amber)}
+  .search svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:18px;height:18px;stroke:var(--muted)}
+  .count{margin-top:10px;font-size:12px;color:var(--muted);letter-spacing:.04em}
+  .list{margin-top:18px;display:flex;flex-direction:column;gap:10px}
+  .card{background:var(--ink-2);border:1px solid var(--line);border-radius:14px;overflow:hidden;transition:border-color .18s}
+  .card.open{border-color:var(--amber)}
+  .card-head{display:flex;align-items:center;gap:13px;padding:15px 18px;cursor:pointer;user-select:none}
+  .num{font-family:'Bebas Neue',sans-serif;font-size:25px;line-height:1;color:var(--red);min-width:34px;text-align:center}
+  .tag{font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:.06em;background:rgba(245,166,35,.14);color:var(--amber);padding:5px 9px 3px;border-radius:6px;white-space:nowrap}
+  .card-title{font-weight:600;font-size:16px;flex:1}
+  .meta{font-size:12px;color:var(--muted);white-space:nowrap}
+  .chev{width:18px;height:18px;stroke:var(--muted);transition:transform .2s;flex-shrink:0}
+  .card.open .chev{transform:rotate(180deg);stroke:var(--amber)}
+  .card-body{display:none;padding:2px 18px 16px;border-top:1px solid var(--line)}
+  .card.open .card-body{display:block;animation:fade .2s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(-4px)}to{opacity:1}}
+  .desc{font-size:13.5px;color:#c9c9d5;margin-top:12px}
+  .gh{font-family:'Bebas Neue',sans-serif;letter-spacing:.08em;font-size:12.5px;color:var(--red);text-transform:uppercase;margin:14px 0 6px}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{font-family:'Bebas Neue',sans-serif;letter-spacing:.04em;font-size:15px;color:var(--paper);background:var(--ink-3);border:1px solid var(--line);border-radius:8px;padding:6px 10px 4px;cursor:pointer;transition:.15s;line-height:1.05;text-align:left}
+  .chip:hover{color:#fff;border-color:var(--red);background:rgba(232,69,69,.16)}
+  .chip .cn{color:var(--red);font-size:12px;margin-right:5px}
+  .pills{display:flex;gap:7px;flex-wrap:wrap;margin-top:6px}
+  .pill{font-family:'Bebas Neue',sans-serif;font-size:11.5px;letter-spacing:.05em;padding:5px 9px 3px;border-radius:5px;text-transform:uppercase}
+  .ph{background:rgba(232,69,69,.15);color:var(--red);border:1px solid rgba(232,69,69,.38)}
+  .du{background:var(--ink-3);color:#b9b9c6}
+  .lv{background:rgba(76,175,130,.15);color:var(--green);border:1px solid rgba(76,175,130,.4)}
+  ol.steps{margin:3px 0 0;padding-left:0;counter-reset:s;list-style:none}
+  ol.steps li{position:relative;padding:5px 0 5px 27px;font-size:13.5px;color:#d7d7e2;counter-increment:s}
+  ol.steps li::before{content:counter(s);position:absolute;left:0;top:5px;width:19px;height:19px;background:var(--ink-3);color:var(--amber);font-family:'Bebas Neue',sans-serif;font-size:11px;border-radius:50%;display:flex;align-items:center;justify-content:center;line-height:1}
+  .srcline{font-size:11.5px;color:var(--muted);font-style:italic;margin-top:11px;border-top:1px dashed var(--line);padding-top:9px}
+  .tr{display:inline-block;margin-top:8px;font-size:13px;color:var(--muted);background:var(--ink-3);border-radius:8px;padding:8px 12px;font-style:italic}
+  .pulse{animation:pulse 1.1s ease}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(245,166,35,.5)}100%{box-shadow:0 0 0 14px rgba(245,166,35,0)}}
+  .empty{text-align:center;color:var(--muted);padding:50px 20px;font-size:15px}
+  footer{margin-top:42px;padding-top:22px;border-top:1px solid var(--line);color:var(--muted);font-size:12px;text-align:center;line-height:1.7}
+  footer b{color:var(--paper)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="eyebrow">Frankton · Préparation Mentale</div>
+  <h1>Outils <span>&</span> Objectifs</h1>
+  <p class="sub">Quel exercice pour quelle compétence — et comment l'exécuter. Toggle l'angle, touche un élément : objectifs visés + mode d'emploi, et rebondis de l'un à l'autre.</p>
+</header>
+<div class="controls">
+  <div class="toggle">
+    <button id="btnObj" class="active" onclick="setView('obj')">Par objectif</button>
+    <button id="btnTool" onclick="setView('tool')">Par outil</button>
+  </div>
+  <div class="search">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+    <input id="q" type="text" placeholder="Rechercher un exercice ou un objectif…" oninput="render()" autocomplete="off">
+  </div>
+  <div class="count" id="count"></div>
+</div>
+<div class="list" id="list"></div>
+<footer>
+  <b>Frankton — Livraison de Mental. Prêt à Performer.</b><br>
+  89 exercices · 22 compétences · mode d'emploi intégré<br>
+  Correspondances proposées ; protocoles détaillés pour les techniques standards et tes ajouts.
+</footer>
+</div>
+
+<script>
+const OBJ = [
+  "Engagement & motivation","Confiance & estime de soi","Planification des objectifs","Attrait pour la compétition",
+  "Goût de l'effort","Capacités de performance en compétition","Locus de contrôle","Gestion du stress & des émotions",
+  "Stress au quotidien","Lâcher-prise","Régulation & expression des émotions","Lucidité envers ses émotions",
+  "Capacité d'attention & de concentration","Reconcentration après une erreur","Gestion de l'impulsivité","Flow (immersion totale)",
+  "Capacité d'imagerie mentale","Gestion du corps & de l'énergie","Gestion de la douleur","Gestion de la blessure",
+  "Dépassement de soi","Alimentation"
+];
+
+const EX = [
+  {id:"R-01",t:"Cohérence Cardiaque",o:[8,9,14,18],d:"Protocole 5-5 (ou 4-6) pour synchroniser cœur et respiration. Régulation du SNA.",ph:"PROFILER",du:"5 MIN",lv:"DÉBUTANT",sert:"Activer le frein parasympathique, état de fond stable.",etapes:["Dos droit, respiration nasale.","Inspirer 5 s, expirer 5 s (≈6 cycles/min).","Tenir 5 min.","Idéal 3×/jour."],src:"Livret Respiration (cohérence cardiaque 5-5)."},
+  {id:"R-02",t:"Box Breathing 4-4-4-4",o:[8,14,15],d:"Inspire 4s, retiens 4s, expire 4s, retiens 4s. Protocole des forces spéciales.",ph:"PILOTER",du:"5 MIN",lv:"INTERMÉDIAIRE",sert:"Reprendre le contrôle avant une échéance.",etapes:["Inspirer 4 s.","Retenir 4 s.","Expirer 4 s.","Retenir 4 s. Répéter."],src:"Livret Respiration / La vérité sur le stress (box breathing)."},
+  {id:"R-03",t:"Respiration 4-7-8",o:[8,9,10],d:"Technique de Dr Weil. Inspire 4s, retiens 7s, expire 8s. Calme parasympathique rapide.",ph:"PILOTER",du:"3 MIN",lv:"DÉBUTANT",sert:"Calme rapide, endormissement.",etapes:["Inspirer par le nez 4 s.","Retenir 7 s.","Expirer par la bouche 8 s.","4 cycles."],src:"Dr Weil — littérature (non détaillé dans le livret)."},
+  {id:"R-04",t:"Méthode Wim Hof",o:[5,18,21],d:"Hyperventilation contrôlée + rétention poumons vides. Active le sympathique.",ph:"CONSTRUIRE",du:"15 MIN",lv:"AVANCÉ",sert:"Monter l'activation, tolérance au stress.",etapes:["30-40 respirations amples et rapides.","Expirer puis rétention poumons vides.","Inspiration profonde + rétention 15 s.","3-4 tours. Jamais dans/près de l'eau."],src:"Wim Hof — littérature (évoqué seulement dans le livret)."},
+  {id:"R-05",t:"Respiration Alternée (Nadi Shodhana)",o:[9,10,13],d:"Alternance narine gauche/droite. Équilibre et apaisement du mental.",ph:"CONSTRUIRE",du:"10 MIN",lv:"INTERMÉDIAIRE",sert:"Apaiser et recentrer.",etapes:["Boucher la narine droite, inspirer à gauche.","Boucher la gauche, expirer à droite.","Inspirer à droite, expirer à gauche.","Alterner 5-10 min."],src:"Pranayama / Nadi Shodhana — littérature."},
+  {id:"R-06",t:"Méthode Buteyko",o:[5,18],d:"Réentraînement à la tolérance au CO2. Respiration plus lente et efficiente.",ph:"CONSTRUIRE",du:"10 MIN",lv:"AVANCÉ",sert:"Respiration plus économe.",etapes:["Respiration nasale, légère, réduite.","Petites apnées contrôlées (control pause).","Augmenter la tolérance au CO2.","Jamais en force."],src:"Livret Respiration (logique Oxygen Advantage, tolérance au CO₂)."},
+  {id:"R-07",t:"Respiration de Compétition",o:[4,6,8],d:"Protocole court (3 cycles) dans les 5 min avant un match. Calibrage de l'activation.",ph:"PILOTER",du:"2 MIN",lv:"DÉBUTANT",sert:"Caler l'activation juste avant le départ.",etapes:["3 cycles courts selon l'état visé.","Expir long = calmer ; expir court = activer.","Dans les 5 min avant le départ."],src:"Livret Respiration (calibrage de l'activation)."},
+  {id:"A-01",t:"Bilan Situationnel Hebdomadaire",o:[13,18],d:"Suivi jour/moment/tâche/état mental/besoin d'activation. Cartographie des patterns énergétiques.",sert:"Cartographier les patterns énergétiques de l'athlète.",etapes:["Noter jour / moment / tâche.","Renseigner l'état mental et le besoin d'activation.","Sur la semaine, repérer les patterns.","En déduire les moments à activer ou réguler."],src:"Livret Activation (bilan situationnel, patterns énergétiques)."},
+  {id:"A-02",t:"Questionnaire d'Intention",o:[4,6],d:"Canal dominant, besoin, puissance, durée, contexte. Calibre l'activation avant une séance.",sert:"Calibrer l'activation avant une séance ou une compétition.",etapes:["Identifier le canal dominant et le besoin principal.","Définir la puissance souhaitée.","Préciser durée et contexte.","En déduire la recette d'activation."],src:"Livret Activation (qu'est-ce que je recherche : quantité, durée, timing)."},
+  {id:"A-03",t:"Audit des Facteurs Énergétiques",o:[9,18],d:"18 facteurs cotés 0 à 5 : sommeil, alimentation, café, écrans, stress chronique…",sert:"Repérer ce qui nourrit et ce qui draine l'énergie.",etapes:["Coter les 18 facteurs de 0 à 5 (sommeil, alimentation, café, écrans, stress…).","Repérer les pollueurs principaux.","Réduire un pollueur à la fois.","Réévaluer l'impact."],src:"Livret Activation (audit des facteurs énergétiques)."},
+  {id:"A-04",t:"Repérage Sensoriel (RPSF)",o:[13,17],d:"Vue, ouïe, toucher, odorat, goût cotés 0 à 5. Identifie le canal dominant.",sert:"Identifier le canal sensoriel dominant de l'athlète.",etapes:["Coter vue, ouïe, toucher, odorat, goût de 0 à 5.","Repérer le canal dominant.","Adapter activateurs et imagerie à ce canal.","Réévaluer si besoin."],src:"Livret Activation (repérage des préférences sensorielles)."},
+  {id:"ACT-1",t:"Activateur — Physique",o:[6,18],d:"Activation cardiaque, mouvement explosif. Éveil rapide.",sert:"Coup de fouet par le mouvement.",etapes:["Mouvement explosif / activation cardiaque courte.","Coter l'éveil obtenu (calme ↔ énergie).","Doser : pic court avant l'effort."],src:"Livret Activation (les 10 activateurs / potions)."},
+  {id:"ACT-2",t:"Activateur — Ludique",o:[1,5],d:"Jeux cognitifs, récompenses. Motivation intrinsèque et plaisir.",sert:"Mobiliser plaisir et motivation intrinsèque.",etapes:["Jeu cognitif ou défi ludique avec récompense.","Mobiliser le plaisir de la tâche.","Mesurer focus vs surcharge."],src:"Livret Activation (les 10 activateurs / potions)."},
+  {id:"ACT-3",t:"Activateur — Alpha / Méditation",o:[8,13],d:"Pratiques méditatives légères pour calme focalisé pré-performance.",sert:"Calme focalisé pré-performance.",etapes:["Courte pratique méditative légère.","Viser un calme focalisé (pas l'endormissement).","Utiliser juste avant la performance."],src:"Livret Activation (les 10 activateurs / potions)."},
+  {id:"ACT-4",t:"Activateur — Kinesthésique",o:[6,18],d:"Proprioception, textures, chaleur. Ancrage corporel.",sert:"Ancrage corporel et sensations motrices.",etapes:["Stimuler proprioception, textures, chaleur.","Ancrer une sensation motrice.","Coter relâchement ↔ tonus."],src:"Livret Activation (les 10 activateurs / potions)."},
+  {id:"ACT-5",t:"Activateur — Odorat",o:[6,14],d:"Olfactions ciblées associées à des états de performance ou de calme.",sert:"Déclencher un état via l'odorat.",etapes:["Diffuser une odeur ciblée (agrumes = vigilance, lavande = calme).","Associer à un état de performance.","Réutiliser comme déclencheur."],src:"Livret Activation (les 10 activateurs / potions)."},
+  {id:"ACT-6",t:"Activateur — Émotions",o:[2,11],d:"Photo, vidéo, discours interne, humour. Déclencheur d'état positif.",sert:"Déclencher un état émotionnel positif.",etapes:["Photo, vidéo, discours interne, humour.","Déclencher l'état émotionnel visé.","Vérifier que l'émotion mobilise sans déborder."],src:"Livret Activation (les 10 activateurs / potions)."},
+  {id:"ACT-7",t:"Activateur — Audition",o:[4,6],d:"Musique, voix. Playlist de préparation, ancrage sonore.",sert:"Ancrage sonore et montée d'énergie.",etapes:["Playlist calibrée par niveau d'intensité.","Plus une musique est puissante, plus elle est rare.","Utiliser comme ancrage sonore."],src:"Livret Activation (playlist par niveaux : plus c'est puissant, plus c'est rare)."},
+  {id:"ACT-8",t:"Activateur — Respiration",o:[8,18],d:"Souffle comme régulateur d'activation vers le haut ou le bas.",sert:"Réguler l'activation par le souffle.",etapes:["Expir long = calmer ; inspir ample et rapide = activer.","Caler le souffle sur le besoin.","S'appuyer sur l'intéroception."],src:"Livret Activation (les 10 activateurs / potions)."},
+  {id:"ACT-9",t:"Activateur — Goût",o:[6],d:"Stimulus gustatif associé à un état de performance.",sert:"Déclencher l'éveil par le goût.",etapes:["Stimulus gustatif (ex. citron) associé à l'éveil.","Coter la hausse d'énergie.","Intégrer avant une tâche cognitive intense."],src:"Livret Activation (les 10 activateurs / potions)."},
+  {id:"ACT-10",t:"Activateur — Vision",o:[6,17],d:"Imagerie, vidéos de référence, environnement visuel déclencheur.",sert:"Déclencher un état via le canal visuel.",etapes:["Imagerie, vidéo de référence, environnement visuel.","Déclencher via le canal visuel.","Associer à l'état cible."],src:"Livret Activation (les 10 activateurs / potions)."},
+  {id:"REL-01",t:"Relaxation Progressive de Jacobson",o:[8,18,19],d:"Contraction-relâchement musculaire progressif des pieds à la tête.",ph:"RÉGULER",du:"20 MIN",lv:"DÉBUTANT",sert:"Prendre conscience et relâcher les tensions.",etapes:["Contracter un groupe musculaire 5 s.","Relâcher 15-20 s, observer le contraste.","Remonter des pieds à la tête.","Balayage global final."],src:"Jacobson — littérature (relaxation progressive)."},
+  {id:"REL-02",t:"Training Autogène de Schultz",o:[10,18],d:"Auto-suggestions de chaleur et lourdeur pour un état profond de détente.",ph:"RÉGULER",du:"15 MIN",lv:"INTERMÉDIAIRE",sert:"Détente profonde par auto-induction.",etapes:["Allongé, calme.","« Mon bras est lourd… chaud ».","Étendre au corps, cœur, respiration.","Sortie progressive."],src:"Schultz — littérature (training autogène)."},
+  {id:"REL-03",t:"Power Nap Guidée (NSDR)",o:[9,18],d:"Non-Sleep Deep Rest. 20 min de relaxation totale sans endormissement.",ph:"RÉGULER",du:"20 MIN",lv:"DÉBUTANT",sert:"Récupération cognitive optimale.",etapes:["Allongé, yeux fermés, sans dormir.","Balayage corporel + respiration lente.","~20 min de repos profond.","Reprise douce."],src:"Livret La vérité sur le stress (NSDR)."},
+  {id:"REL-04",t:"Ancrage Sensoriel 5-4-3-2-1",o:[9,12,14],d:"Grounding : 5 vus, 4 ressentis, 3 sons, 2 odeurs, 1 goût. Interrompt la rumination.",ph:"PILOTER",du:"3 MIN",lv:"DÉBUTANT",sert:"Revenir au présent rapidement.",etapes:["5 choses vues.","4 ressenties.","3 entendues.","2 senties, 1 goûtée."],src:"Grounding 5-4-3-2-1 — littérature."},
+  {id:"IM-01",t:"Protocole PETTLEP",o:[6,17],d:"7 éléments : Physical, Environment, Task, Timing, Learning, Emotion, Perspective.",ph:"CONSTRUIRE",du:"20 MIN",lv:"AVANCÉ",sert:"Imagerie la plus proche possible du réel (équivalence fonctionnelle).",etapes:["Physique : posture/tenue réelles.","Environnement : recréer le lieu.","Tâche : vraies exigences (tensions, FC).","Timing réel · Émotion réelle · 1re personne."],src:"Livret Imagerie mentale (modèle PETTLEP — Holmes & Collins, 2001)."},
+  {id:"IM-02",t:"MIQ-R (Questionnaire d'Imagerie)",o:[17],d:"Movement Imagery Questionnaire-Revised. Mesure vivacité et facilité.",ph:"PROFILER",du:"15 MIN",lv:"INTERMÉDIAIRE",sert:"Établir le profil d'imageur.",etapes:["Imaginer un mouvement en visuel.","Le réimaginer en kinesthésique.","Coter vivacité / facilité.","En déduire le canal dominant."],src:"Livret Imagerie mentale (grille d'évaluation du profil d'imageur)."},
+  {id:"IM-03",t:"VMBR",o:[6,8,17],d:"Relaxation profonde + imagerie de performance. 3 phases : calme, imagerie, retour.",ph:"CONSTRUIRE",du:"25 MIN",lv:"AVANCÉ",sert:"Coupler détente et répétition mentale.",etapes:["Phase 1 : relaxation profonde.","Phase 2 : imagerie interne.","Phase 3 : retour au calme.","Répéter régulièrement."],src:"Livret Imagerie mentale (VMBR : relaxation + imagerie)."},
+  {id:"IM-04",t:"Script de Performance",o:[2,6,17],d:"Scénario complet en temps réel d'une compétition idéale. Vue interne, multisensoriel.",ph:"CONSTRUIRE",du:"30 MIN",lv:"INTERMÉDIAIRE",sert:"Modéliser et répéter la perf idéale.",etapes:["Écrire la compétition idéale en temps réel.","Vue interne, multisensoriel, émotions.","Le lire/écouter en routine.","Affiner."],src:"Livret Imagerie mentale (script de performance)."},
+  {id:"IM-05",t:"Anamnèse d'un État Peak",o:[2,16,17],d:"Revenir sur la meilleure performance. Extraire indices sensoriels, cognitifs, émotionnels.",ph:"PROFILER",du:"20 MIN",lv:"DÉBUTANT",sert:"Identifier la signature de l'état optimal.",etapes:["Revenir sur la meilleure perf.","Extraire les indices.","Modéliser l'état optimal.","Réutiliser comme cible."],src:"Livret Imagerie mentale (anamnèse d'un état peak)."},
+  {id:"IM-06",t:"Routine Pré-Compétition par Imagerie",o:[4,6,16],d:"Séquence fixe 5-10 min : imagerie d'actions réussies, ancrage, mot-déclencheur.",ph:"PILOTER",du:"10 MIN",lv:"INTERMÉDIAIRE",sert:"Amorcer l'état de performance.",etapes:["Séquence fixe 5-10 min.","Imagerie d'actions réussies.","Ancrage + mot-déclencheur.","Toujours le même ordre."],src:"Livret Imagerie mentale + Routines (routine pré-compétition)."},
+  {id:"IM-07",t:"Fiche Réflexe",o:[10,14,16],d:"Réponse pré-définie à déclencher dans une situation critique, sans réfléchir.",ph:"PILOTER",du:"10 MIN",lv:"INTERMÉDIAIRE",new:true,sert:"Automatiser la bonne réaction sous pression.",etapes:["Identifier la situation critique.","Définir LA réponse : geste + mot + action.","Répéter jusqu'à l'automatisme.","Déclencher en match."],src:"Livret Routines en préparation mentale."},
+  {id:"MED-01",t:"Body Scan Progressif",o:[12,13,18],d:"Balayage corporel systématique des pieds à la tête.",ph:"CONSTRUIRE",du:"20 MIN",lv:"DÉBUTANT",sert:"Développer la conscience du corps.",etapes:["Attention au souffle.","Balayer des pieds à la tête.","Observer sans juger.","Relâcher les tensions."],src:"Livret Mindfulness, Attention, Flow (body scan — conscience intéroceptive)."},
+  {id:"MED-02",t:"Méditation Attention Focalisée",o:[13],d:"Focalisation sur un objet unique (respiration, son).",ph:"CONSTRUIRE",du:"15 MIN",lv:"DÉBUTANT",sert:"Muscler la concentration.",etapes:["Choisir un ancrage (souffle, son).","Y maintenir l'attention.","Revenir sans juger.","Allonger la durée."],src:"Livret Mindfulness, Attention, Flow (attention focalisée)."},
+  {id:"MED-03",t:"Monitoring Ouvert (Pleine Conscience)",o:[10,11,12,15],d:"Observer les pensées sans jugement. Décentration, flexibilité.",ph:"CONSTRUIRE",du:"15 MIN",lv:"INTERMÉDIAIRE",sert:"Prendre du recul sur ses pensées.",etapes:["Attention ouverte.","Observer ce qui passe.","Ne pas s'accrocher.","Laisser venir et partir."],src:"Livret Mindfulness, Attention, Flow (attention ouverte / monitoring)."},
+  {id:"MED-04",t:"Marche Méditative",o:[9,10,13],d:"Ancrage dans les sensations de la marche. Accessible sans assise.",ph:"CONSTRUIRE",du:"20 MIN",lv:"DÉBUTANT",sert:"Méditer en mouvement.",etapes:["Marcher lentement, attention aux appuis.","Synchroniser souffle et pas.","Revenir aux sensations.","Format accessible."],src:"Livret Mindfulness, Attention, Flow (marche méditative)."},
+  {id:"ST-01",t:"Modèle ABC (Ellis)",o:[8,11],d:"A = déclencheur · B = croyance · C = conséquence émotionnelle. Modifier B.",ph:"PILOTER",du:"20 MIN",lv:"INTERMÉDIAIRE",sert:"L'émotion vient de l'interprétation.",etapes:["A : l'événement.","B : la croyance.","C : la conséquence.","Modifier B pour changer C."],src:"Ellis (ABC) — Livret La vérité sur le stress."},
+  {id:"ST-02",t:"TCC — Cycle Pensées/Émotions/Comportements",o:[8,11],d:"Cartographier le cercle vicieux et trouver les portes d'entrée.",ph:"PILOTER",du:"25 MIN",lv:"INTERMÉDIAIRE",sert:"Comprendre et casser la boucle.",etapes:["Pensées → émotions → comportements.","Repérer le cercle vicieux.","Identifier les portes d'entrée.","Choisir où le briser."],src:"Livret La vérité sur le stress (cycle TCC)."},
+  {id:"ST-03",t:"Restructuration Cognitive",o:[2,7,8],d:"Identifier les pensées automatiques négatives, les questionner, reformuler.",ph:"RÉGULER",du:"30 MIN",lv:"AVANCÉ",sert:"Transformer les pensées parasites.",etapes:["Repérer la pensée automatique.","Preuves pour / contre.","Reformuler en pensée adaptée.","Tester en situation."],src:"Livret La vérité sur le stress (restructuration cognitive)."},
+  {id:"ST-04",t:"Dialogue Interne Positif (Self-Talk)",o:[2,4,7,19],d:"Identifier le discours interne, construire des phrases clés.",ph:"CONSTRUIRE",du:"20 MIN",lv:"INTERMÉDIAIRE",sert:"Se donner des consignes utiles.",etapes:["Repérer le discours actuel.","Instructionnel (geste) ou motivationnel (effort).","Phrases clés courtes.","Répéter à l'entraînement."],src:"Self-talk — Hatzigeorgiadis et al., 2011 (d≈.48)."},
+  {id:"ST-05",t:"Zone d'Activation Optimale (IZOF)",o:[4,6,8],d:"Identifier la zone d'activation optimale (Hanin) et l'atteindre de façon répétable.",ph:"PROFILER",du:"20 MIN",lv:"INTERMÉDIAIRE",sert:"Trouver son point d'activation idéal.",etapes:["Repérer l'activation des meilleures perfs.","Définir la zone optimale.","Trouver les leviers.","S'entraîner à la reproduire."],src:"Hanin (IZOF) — Livret La vérité sur le stress."},
+  {id:"ST-06",t:"Roue des Émotions",o:[11,12],d:"Nommer précisément l'émotion plutôt que rester dans le flou.",ph:"RÉGULER",du:"10 MIN",lv:"DÉBUTANT",new:true,sert:"Nommer aide déjà à réguler.",etapes:["Sensation brute.","Famille d'émotion (8 primaires).","Régler l'intensité.","Mot juste → besoin."],src:"Roue de Plutchik."},
+  {id:"ST-07",t:"Reconnaissance des Besoins",o:[8,11],d:"Identifier le besoin derrière l'émotion.",ph:"RÉGULER",du:"15 MIN",lv:"DÉBUTANT",new:true,sert:"Distinguer le besoin de la stratégie.",etapes:["Partir de l'émotion nommée.","De quoi ai-je besoin ?","Besoin ≠ stratégie.","Action qui répond au besoin."],src:"Logique CNV."},
+  {id:"ST-08",t:"Boussole Émotionnelle",o:[7,10,11,16],d:"Orienter ses émotions vers un état favorable à la tâche.",ph:"RÉGULER",du:"10 MIN",lv:"INTERMÉDIAIRE",new:true,sert:"D'un état subi à un état choisi.",etapes:["Situer l'émotion actuelle.","Définir l'état utile.","Choisir un levier.","Vérifier le déplacement."],src:"Proche de ta Boussole Mentale."},
+  {id:"ST-09",t:"Les 2 Cerveaux",o:[7,13],d:"Équilibrer émotion et rationalité pour garder le contrôle.",ph:"CONSTRUIRE",du:"15 MIN",lv:"DÉBUTANT",new:true,sert:"Reprendre la main quand l'émotionnel déborde.",etapes:["Repérer l'emprise émotionnelle.","Voix rationnelle (faits, plan).","Rééquilibrer.","Revenir à la tâche."]},
+  {id:"ST-10",t:"Locus de Contrôle",o:[7,21],d:"Trier contrôlable / non contrôlable pour réinvestir l'énergie.",ph:"PILOTER",du:"15 MIN",lv:"DÉBUTANT",new:true,sert:"Agir là où ça compte.",etapes:["Lister les facteurs.","Contrôlable / influençable / non.","Concentrer sur le contrôlable.","Lâcher le reste."],src:"Rotter."},
+  {id:"ST-11",t:"Flexibilité Mentale",o:[10,15],d:"Adapter ses réactions plutôt que de rigidifier.",ph:"CONSTRUIRE",du:"15 MIN",lv:"INTERMÉDIAIRE",new:true,sert:"Élargir le répertoire de réponses.",etapes:["Repérer la réaction automatique.","Générer 1-2 alternatives.","Choisir la plus adaptée.","S'entraîner à varier."]},
+  {id:"ST-12",t:"Fiche Déclencheurs",o:[9,12,14],d:"Repérer ce qui déclenche stress, erreurs ou émotions.",ph:"PILOTER",du:"10 MIN",lv:"DÉBUTANT",new:true,sert:"Anticiper plutôt que subir.",etapes:["Noter les épisodes.","Déclencheur juste avant.","Récurrences.","Préparer une parade."]},
+  {id:"COL-01",t:"Sociogramme de Moreno",o:[],tr:"Collectif & cohésion",d:"Cartographier attraction/rejet. Leaders informels, isolés, cliques, tensions.",ph:"PROFILER",du:"30 MIN",lv:"AVANCÉ",sert:"Voir la structure affective du groupe.",etapes:["Questionner choix / rejets.","Tracer le sociogramme.","Repérer leaders, isolés, cliques.","Agir sur les tensions."],src:"Livret Dynamique de groupe (sociogramme de Moreno)."},
+  {id:"COL-02",t:"Cartographie d'Équipe (Mintzberg)",o:[],tr:"Collectif & cohésion",d:"Rôles fonctionnels, centre opérationnel, flux, zones de friction.",ph:"PROFILER",du:"45 MIN",lv:"AVANCÉ",sert:"Lire l'organisation réelle.",etapes:["Identifier les rôles.","Centre opérationnel et flux.","Zones de friction.","Réorganiser."],src:"Livret Dynamique de groupe (cartographie / Mintzberg)."},
+  {id:"COL-03",t:"Toupie de la Performance Collective",o:[],tr:"Collectif & cohésion",d:"Modèle à 6 dimensions de la performance d'équipe. Diagnostic visuel et plan d'action.",sert:"Diagnostiquer l'équilibre de l'équipe sur 4 pôles.",etapes:["Axe 1 : Performance ↔ Bien-être.","Axe 2 : Individualité ↔ Système collectif.","Situer l'équipe sur chaque axe (PMA, SWOT, cohésion, RPS, PESTEL).","Harmoniser : ramener l'équipe au centre, plan d'action."],src:"Livret Dynamique de groupe (Toupie de la performance, 4 pôles)."},
+  {id:"COL-04",t:"Leadership Situationnel (Hersey/Blanchard)",o:[],tr:"Collectif & leadership",d:"4 styles selon la maturité du collaborateur.",ph:"CONSTRUIRE",du:"45 MIN",lv:"INTERMÉDIAIRE",sert:"Ajuster son leadership au profil.",etapes:["Évaluer maturité (compétence + motivation).","Directif / persuasif / participatif / délégatif.","Adapter au profil.","Réajuster."],src:"Livret Dynamique de groupe (leadership situationnel, Hersey & Blanchard)."},
+  {id:"COL-05",t:"Cycle d'Autonomie (Symor)",o:[],tr:"Collectif & cohésion",d:"4 stades : dépendance, contre-dép, indépendance, interdépendance.",ph:"CONSTRUIRE",du:"30 MIN",lv:"AVANCÉ",sert:"Situer le groupe et l'accompagner.",etapes:["Repérer les 4 stades.","Identifier le stade du groupe.","Adapter l'intervention.","Accompagner la transition."],src:"Livret Dynamique de groupe (cycle d'autonomie, Symor)."},
+  {id:"EV-01",t:"Profil Mental Athlète (PMA)",o:[],tr:"Profilage / diagnostic",d:"Radar 6 dimensions : confiance, focus, activation, émotions, imagerie, cohésion.",sert:"Bilan mental initial standardisé sur 6 dimensions.",etapes:["Faire passer le test (confiance, focus, activation, émotions, imagerie, cohésion).","Reporter le score.","Lire le profil radar.","En déduire les axes de travail."],src:"Livret Entretien & bilan en PM (Profil Mental Athlète)."},
+  {id:"EV-02",t:"SWOT Mental",o:[],tr:"Profilage / diagnostic",d:"Forces / Faiblesses / Opportunités / Menaces appliqué au profil mental.",ph:"PROFILER",du:"20 MIN",lv:"DÉBUTANT",sert:"Diagnostic accessible et structurant.",etapes:["Forces / Faiblesses (internes).","Opportunités / Menaces (externes).","Croiser pour des axes.","Prioriser."],src:"Livret Dynamique de groupe (SWOT mental)."},
+  {id:"EV-03",t:"Bilan Initial Sportif (BIS)",o:[],tr:"Profilage / diagnostic",d:"Formulaire complet : profil, objectifs, ressources, blocages, histoire de la compétition.",sert:"Recueillir le profil complet en entrée d'accompagnement.",etapes:["Renseigner profil sportif et objectifs.","Identifier ressources et blocages perçus.","Retracer l'histoire de la relation à la compétition.","Servir de base au plan d'intervention."],src:"Livret Entretien & bilan en PM (Bilan Initial Sportif)."},
+  {id:"EV-04",t:"Écoute Flottante & Association Libre",o:[],tr:"Profilage / posture clinique",d:"Posture non directive. Révèle les représentations implicites.",ph:"PROFILER",du:"30 MIN",lv:"AVANCÉ",sert:"Faire émerger ce qui n'est pas dit.",etapes:["Posture non directive.","Laisser parler librement.","Relancer a minima.","Repérer l'implicite."],src:"Livret Entretien & bilan en PM (écoute flottante)."},
+  {id:"EV-05",t:"Planning d'Intervention PM",o:[3],d:"Calendrier calé sur la périodisation. Axes, fréquence, indicateurs de suivi.",sert:"Caler la préparation mentale sur la périodisation sportive.",etapes:["Récupérer le calendrier sportif (périodisation).","Définir les axes de travail.","Fixer la fréquence des séances.","Poser les indicateurs de suivi."],src:"Livret Méthodologie / Entretien & bilan (planning d'intervention)."},
+  {id:"EV-06",t:"Échelle de Borg (RPE)",o:[5,19,21],d:"Mesurer l'effort perçu sans capteur, et le doser.",ph:"PILOTER",du:"5 MIN",lv:"DÉBUTANT",new:true,sert:"Caler l'intensité sur le ressenti.",etapes:["Pénibilité globale ressentie.","6-20 : 11 léger, 13 assez dur, 15 dur, 17 très dur (×10≈FC).","Douleur localisée → CR-10.","Ajuster selon l'écart."],src:"Gunnar Borg."},
+  {id:"EV-07",t:"PVT — Vigilance",o:[13],d:"Mesurer vigilance et temps de réaction (effet fatigue).",ph:"PROFILER",du:"10 MIN",lv:"INTERMÉDIAIRE",new:true,sert:"Marqueur de dette de sommeil.",etapes:["Stimulus visuel aléatoire.","Réagir au plus vite.","Temps de réaction et lapses.","Suivre selon fatigue."],src:"PVT (Dinges)."},
+  {id:"EV-08",t:"Grille d'Observation",o:[3,14],d:"Observer et ajuster objectifs ou erreurs de façon structurée.",ph:"PILOTER",du:"15 MIN",lv:"INTERMÉDIAIRE",new:true,sert:"De l'impression au mesuré.",etapes:["Critères à l'avance.","Observer sans interpréter.","Confronter aux objectifs.","Corriger et reboucler."]},
+  {id:"EV-09",t:"Cartographie Mentale",o:[3,7,12],d:"Organiser visuellement pensées, étapes ou facteurs.",ph:"CONSTRUIRE",du:"20 MIN",lv:"DÉBUTANT",new:true,sert:"Voir les liens, repérer le contrôlable.",etapes:["Thème au centre.","Branches associées.","Contrôlable / causes / conséquences.","En déduire les leviers."]},
+  {id:"GU-01",t:"Préparation — Cohérence 4-4-4",o:[18,20],d:"Induction en hypovigilance avant imagerie de guérison. 3 cycles 4-4-4.",sert:"Induire l'hypovigilance avant l'imagerie de guérison.",etapes:["S'installer au calme, allongé.","3 cycles : 4 s inspire / 4 s rétention / 4 s expire.","Laisser le rythme cardiaque baisser.","Enchaîner avec sons binauraux alpha/thêta si besoin."],src:"Livret Gestion de la blessure (préparation)."},
+  {id:"GU-02",t:"Scan Corporel — Zone Blessée",o:[12,19,20],d:"Observation bienveillante. Distinguer douleur / tension / émotion. Réduire l'évitement.",sert:"Observer la zone sans évitement, distinguer douleur / tension / émotion.",etapes:["Porter une attention bienveillante à la zone blessée.","Distinguer ce qui est douleur, tension, émotion.","Ne pas fuir la sensation, juste l'observer.","Réduire l'évitement corporel progressivement."],src:"Livret Gestion de la blessure (scan zone blessée)."},
+  {id:"GU-03",t:"Imagerie d'Activation de Guérison",o:[20],d:"Visualiser le processus biologique de guérison. Renforcer conviction et agentivité.",sert:"Renforcer la conviction de récupération et le sentiment d'agentivité.",etapes:["Passer en hypovigilance (cohérence + binaural).","Visualiser le processus biologique de guérison en cours.","Voir la zone se réparer et se renforcer.","Ancrer la sensation de récupération active."],src:"Livret Imagerie mentale (imagerie de guérison)."},
+  {id:"GU-04",t:"Projection État Cible (3 Modalités)",o:[1,17,20],d:"Retour à la performance en vue interne + kinesthésique + auditive.",sert:"Nourrir la motivation par la projection du retour à la performance.",etapes:["Visualiser le retour à la performance en vue interne.","Ajouter la modalité kinesthésique (sensations).","Ajouter la modalité auditive (sons du contexte).","Ressentir l'état cible comme déjà atteint."],src:"Livret Imagerie mentale (projection multisensorielle)."},
+  {id:"GU-05",t:"Ancrage & Débrief de Séance",o:[14,20],d:"Rituel de clôture après imagerie de guérison. Ancrer le positif, noter le remarquable.",sert:"Clore la séance et capitaliser dessus.",etapes:["Ancrer les sensations positives de la séance.","Noter les éléments remarquables (images, ressentis).","Repérer ce qui a bien ou moins bien marché.","Préparer la séance suivante."],src:"Livret Gestion de la blessure (ancrage & débrief)."},
+  {id:"GU-06",t:"Suivi Hebdomadaire de Blessure",o:[20],d:"Tracker douleur, peur du mouvement, motivation, confiance.",sert:"Détecter l'érosion motivationnelle dans la durée.",etapes:["Scorer douleur, peur du mouvement, motivation, confiance.","Comparer à la semaine précédente.","Repérer les baisses (signal d'alerte).","Ajuster l'accompagnement."],src:"Livret Gestion de la blessure (suivi)."},
+  {id:"GU-07",t:"Travail sur la Peur de Rechute",o:[8,20],d:"Scénarios catastrophes, exposition progressive. Vigilance saine vs hypervigilance.",sert:"Distinguer vigilance saine et hypervigilance.",etapes:["Identifier les scénarios catastrophes.","Exposition progressive en imagerie, du moins au plus anxiogène.","Distinguer vigilance utile et hypervigilance parasite.","Valider chaque palier avant d'avancer."],src:"Livret Gestion de la blessure (peur de rechute)."},
+  {id:"GU-08",t:"Maintien de l'Identité Sportive",o:[2,20],d:"Identité multi-facettes pendant l'immobilisation. L'athlète n'est pas que son sport.",sert:"Rappeler que l'athlète n'est pas réductible à son sport.",etapes:["Lister les facettes de l'identité au-delà du sport.","Travailler l'identité multi-facettes pendant l'immobilisation.","Maintenir le lien au collectif.","Réinvestir d'autres rôles temporairement."],src:"Livret Gestion de la blessure (identité sportive)."},
+  {id:"GU-09",t:"Auto-Évaluation — Ma Relation à la Blessure",o:[1,20],d:"4 questions sur la place du sport dans l'identité. Fragilités avant la blessure.",sert:"Révéler les fragilités identitaires, même avant la blessure.",etapes:["Répondre aux 4 questions sur la place du sport dans l'identité.","Repérer les zones de fragilité.","En discuter en accompagnement.","Servir de base de prévention."],src:"Livret Gestion de la blessure (relation à la blessure)."},
+  {id:"GU-10",t:"Grille d'Évaluation par Séance",o:[20],d:"8 indicateurs à scorer. Suit sécurité, évitement, contrôle, confiance.",sert:"Suivre l'évolution séance après séance.",etapes:["Scorer les 8 indicateurs clés.","Suivre sécurité, évitement, contrôle, confiance.","Comparer dans le temps.","Ajuster le protocole."],src:"Livret Gestion de la blessure (grille par séance)."},
+  {id:"GU-11",t:"Protocole Imagerie par Stade",o:[17,20],d:"Scripts différenciés post-op → mobilisation → réathlétisation → retour sport.",sert:"Adapter l'imagerie au stade de rééducation.",etapes:["Repérer le stade : post-op, mobilisation, réathlétisation, retour sport.","Post-op : zone saine + mouvements passifs.","Mobilisation : contractions isométriques + articulation contrôlée.","Réathlétisation/retour : appuis, gestes spécifiques, scénarios réels. Induction binaurale, 15-20 min, 3-5×/sem."],src:"Livret Imagerie mentale (protocole 5 phases : post-op → mobilisation → réathlétisation → retour). Induction binaurale."},
+  {id:"GU-12",t:"Atelier Blessures par Sport",o:[20],d:"Tableau : blessure → conséquences physiques → mentales → travail mental utile.",sert:"Relier type de blessure et travail mental utile.",etapes:["Tableau : blessure → conséquences physiques.","→ conséquences mentales.","→ travail mental utile.","Adapter au public cible."],src:"Livret Gestion de la blessure (atelier par sport)."},
+  {id:"DR-01",t:"Kit Anti-Défaite",o:[11,21],d:"Note sa plus grosse défaite, contexte, émotion dominante. Porte d'entrée post-compétition.",sert:"Porte d'entrée structurée juste après une défaite.",etapes:["Noter sa plus grosse défaite.","Décrire le contexte.","Nommer l'émotion dominante.","Ouvrir la discussion à partir de là."],src:"Doc Anatomie de la défaite (kit anti-défaite)."},
+  {id:"DR-02",t:"Cartographie de la Défaite (5 Phases)",o:[7,11],d:"Modèle momentum + contexte + 5 phases. Résultat ≠ identité.",sert:"Séparer les faits des émotions : résultat ≠ identité.",etapes:["Momentum : l'instant décisif.","Contexte de la défaite.","Phases vécues : choc → colère → remise en question → acceptation.","Apprentissages tirés."],src:"Doc Anatomie de la défaite (momentum + contexte + 5 phases)."},
+  {id:"DR-03",t:"Atelier Binôme — Cycles de Réactions",o:[11],d:"Raconter, cartographier, co-construire une fiche action. Idéal en groupe.",sert:"Travailler la défaite à deux, idéal en groupe.",etapes:["Chacun raconte une défaite à son binôme.","Cartographier la défaite de l'autre (momentum, contexte, phases, apprentissages).","Co-construire une fiche action anti-défaite.","Mise en commun : 2-3 binômes présentent."],src:"Doc Anatomie de la défaite (atelier en binôme)."},
+  {id:"DR-04",t:"Fiche Action Anti-Défaite (5 Leviers)",o:[11,21],d:"Un levier par phase : respiration, questionnement, valorisation, recadrage, plan d'action.",sert:"Un levier PM ciblé par phase de la défaite.",etapes:["Choc → respiration, recentrage, présence calme.","Rationalisation → questionnement neutre (« quels sont les faits ? »).","Impact identitaire → valoriser réussites et qualités.","Acceptation → reformuler (résultat ≠ identité) ; Apprentissage → plan d'action concret."],src:"Doc Anatomie de la défaite (fiche action, 5 leviers)."},
+  {id:"NS-01",t:"Neuro-Check — Quiz Vrai/Faux",o:[],tr:"Culture / neurosciences",d:"10 affirmations pour corriger les idées reçues. Lance une discussion scientifique.",sert:"Corriger les idées reçues sur le cerveau et lancer la discussion.",etapes:["Présenter 10 affirmations Vrai/Faux sur le cerveau.","Faire répondre les athlètes.","Corriger avec les apports neuro (plasticité, etc.).","Ancrer par la discussion."],src:"Livret Introduction aux neurosciences (idées reçues / Vrai-Faux)."},
+  {id:"NS-02",t:"Explorateur du Cerveau",o:[],tr:"Culture / neurosciences",d:"Exploration de livres → carte mentale → validation. Ancre la neuro par l'action.",sert:"Ancrer les connaissances neuro par l'action.",etapes:["Exploration de livres / ressources.","Construire une carte mentale collective.","Validation scientifique.","Synthèse partagée."],src:"Livret Introduction aux neurosciences (atelier d'exploration)."},
+  {id:"MO-01",t:"IKIGAI Sportif",o:[1],d:"Trouver sa raison d'être et réaligner la motivation.",ph:"PROFILER",du:"30 MIN",lv:"DÉBUTANT",new:true,sert:"Mise en sens durable.",etapes:["Venn 4 cercles : aimes / doué / monde a besoin / payé.","Remplir chaque cercle.","Passion, Profession, Vocation, Mission.","Le centre = l'ikigai."],src:"Livret Motivation et sens."},
+  {id:"MO-02",t:"Auto-Évaluation des Motivations",o:[1,5],d:"Distinguer motivation intrinsèque et extrinsèque.",ph:"PROFILER",du:"15 MIN",lv:"DÉBUTANT",new:true,sert:"Mesurer l'engagement et ses sources.",etapes:["Évaluer engagement et effort.","Intrinsèque / extrinsèque.","Ce qui satisfait le plus.","Point de mesure."]},
+  {id:"MO-03",t:"« Pour qui je joue ? »",o:[1],d:"Clarifier les destinataires réels de la pratique.",ph:"PROFILER",du:"20 MIN",lv:"INTERMÉDIAIRE",new:true,sert:"Démêler soi / entourage / regard.",etapes:["Lister les destinataires perçus.","Pondérer leur poids.","Repérer les pressions parasites.","Recentrer sur soi."],src:"Outil Frankton."},
+  {id:"MO-04",t:"Boussole Motivationnelle",o:[1],d:"Synthèse QPSS + TEOSQ + PMCSQ-2 : orientation, besoins, climat.",ph:"PROFILER",du:"30 MIN",lv:"INTERMÉDIAIRE",new:true,sert:"Cartographier le profil motivationnel.",etapes:["Passer les 3 questionnaires.","Orientation ego / tâche.","Besoins et climat perçu.","Débouche sur la Synthèse."],src:"Boussole Motivationnelle Frankton."},
+  {id:"MO-05",t:"Alignement des Valeurs",o:[1,10],d:"Reconnecter le « pourquoi » quand le résultat a érodé le plaisir.",ph:"CONSTRUIRE",du:"30 MIN",lv:"INTERMÉDIAIRE",new:true,sert:"Recentrer sur des objectifs durables.",etapes:["Lister ses valeurs.","Les confronter aux objectifs.","Repérer les écarts.","Réajuster."]},
+  {id:"OB-01",t:"Cascade d'Objectifs",o:[1,3,7],d:"Relier ambition, performance, moyens et attention, du long terme au 1er pas.",ph:"CONSTRUIRE",du:"30 MIN",lv:"INTERMÉDIAIRE",new:true,sert:"Décliner une ambition en cibles contrôlables.",etapes:["Ambition rêvée (étoile polaire).","Objectif de performance.","Étapes.","Moyens puis attention pour le 1er pas."],src:"Fixation d'objectifs · 3 formes."},
+  {id:"OB-02",t:"Filtres SMARTE",o:[3],d:"Spécifique · Mesurable · Atteignable · Réaliste · Temporel · Éthique.",ph:"PILOTER",du:"15 MIN",lv:"DÉBUTANT",new:true,sert:"D'une intention floue à un objectif posé.",etapes:["Noter l'objectif brut.","Passer les 6 filtres.","Repérer le filtre qui coince.","Reformuler."],src:"Locke & Latham."},
+  {id:"OB-03",t:"Vision Board",o:[3,1,21],d:"Représentation visuelle de l'ambition, reliée à la cascade.",ph:"RÉGULER",du:"20 MIN",lv:"DÉBUTANT",new:true,sert:"Support de motivation visuel quotidien.",etapes:["Rassembler images et mots.","Composer un visuel.","Afficher où on le voit chaque jour.","Le relier à la cascade."]},
+  {id:"OB-04",t:"Étoile Polaire vs Objectif de Travail",o:[3,7],d:"Distinguer l'objectif de résultat (conséquence) de l'objectif de travail.",ph:"PROFILER",du:"15 MIN",lv:"DÉBUTANT",new:true,sert:"Replacer l'attention sur le contrôlable.",etapes:["Écrire l'objectif de résultat.","Acter que c'est une conséquence.","Définir l'objectif de travail.","Résultat = cap, processus = travail."],src:"Principe Frankton."}
+];
+
+const BYOBJ = {};
+EX.forEach(e=>e.o.forEach(n=>{(BYOBJ[n]=BYOBJ[n]||[]).push(e);}));
+
+let view='obj';
+const norm=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+
+function setView(v){view=v;document.getElementById('btnObj').classList.toggle('active',v==='obj');document.getElementById('btnTool').classList.toggle('active',v==='tool');render();}
+function jumpTo(tv,key){view=tv;document.getElementById('q').value='';
+  document.getElementById('btnObj').classList.toggle('active',view==='obj');document.getElementById('btnTool').classList.toggle('active',view==='tool');
+  render(key);
+  const el=document.querySelector('[data-key="'+CSS.escape(key)+'"]');
+  if(el){el.classList.add('open','pulse');el.scrollIntoView({behavior:'smooth',block:'center'});setTimeout(()=>el.classList.remove('pulse'),1200);}}
+function toggleCard(e){e.currentTarget.parentElement.classList.toggle('open');}
+
+function toolDetail(e){
+  let h='';
+  h+=`<div class="desc">${e.d}</div>`;
+  if(e.ph){h+=`<div class="pills"><span class="pill ph">${e.ph}</span><span class="pill du">${e.du}</span><span class="pill lv">${e.lv}</span></div>`;}
+  h+='<div class="gh">Objectifs visés</div>';
+  if(e.tr){h+=`<span class="tr">Transversal — ${e.tr} (hors des 22 compétences individuelles).</span>`;}
+  else{h+=`<div class="chips">${e.o.map(n=>`<button class="chip" onclick="jumpTo('obj','OBJ:${n}')"><span class="cn">${String(n).padStart(2,'0')}</span>${OBJ[n-1]}</button>`).join('')}</div>`;}
+  if(e.etapes){
+    h+=`<div class="gh">À quoi ça sert</div><div class="desc" style="margin-top:0">${e.sert}</div>`;
+    h+=`<div class="gh">Comment faire</div><ol class="steps">${e.etapes.map(s=>'<li>'+s+'</li>').join('')}</ol>`;
+    if(e.src)h+=`<div class="srcline">Source — ${e.src}</div>`;
+  }
+  return h;
+}
+function render(openKey){
+  const q=norm(document.getElementById('q').value.trim());
+  const list=document.getElementById('list');list.innerHTML='';let shown=0;
+  if(view==='obj'){
+    OBJ.forEach((name,i)=>{
+      const n=i+1;const exs=BYOBJ[n]||[];
+      if(q && !(norm(name).includes(q)||exs.some(e=>norm(e.t).includes(q)))) return;
+      shown++;
+      const card=document.createElement('div');card.className='card';card.dataset.key='OBJ:'+n;
+      if(openKey==='OBJ:'+n)card.classList.add('open');
+      const chips=exs.map(e=>`<button class="chip" onclick="jumpTo('tool','${e.id}')"><span class="cn">${e.id}</span>${e.t}</button>`).join('');
+      card.innerHTML=`<div class="card-head" onclick="toggleCard(event)"><span class="num">${String(n).padStart(2,'0')}</span><span class="card-title">${name}</span><span class="meta">${exs.length} exos</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></div><div class="card-body"><div class="gh">Exercices qui développent cette compétence</div><div class="chips">${chips||'<span class="tr">Aucun exercice rattaché.</span>'}</div></div>`;
+      list.appendChild(card);
+    });
+  } else {
+    EX.forEach(e=>{
+      if(q && !(norm(e.t).includes(q)||norm(e.id).includes(q)||e.o.some(n=>norm(OBJ[n-1]).includes(q)))) return;
+      shown++;
+      const card=document.createElement('div');card.className='card';card.dataset.key=e.id;
+      if(openKey===e.id)card.classList.add('open');
+      const metaTxt=e.tr?'transversal':e.o.length+' obj.';
+      card.innerHTML=`<div class="card-head" onclick="toggleCard(event)"><span class="tag">${e.id}</span><span class="card-title">${e.t}</span><span class="meta">${metaTxt}</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></div><div class="card-body">${toolDetail(e)}</div>`;
+      list.appendChild(card);
+    });
+  }
+  document.getElementById('count').textContent = shown+(view==='obj'?' objectif'+(shown>1?'s':''):' exercice'+(shown>1?'s':''))+(q?' · filtré':'');
+  if(shown===0)list.innerHTML='<div class="empty">Aucune correspondance.</div>';
+}
+render();
+</script>
+</body>
+</html>
